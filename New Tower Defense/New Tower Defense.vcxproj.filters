@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources\shaders">
+      <UniqueIdentifier>{36f41e64-3555-4683-bab2-7d7649d917b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers de ressources\maps">
+      <UniqueIdentifier>{3d23a4f1-ece8-4bac-8257-90c51f7f92f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers de ressources\textures">
+      <UniqueIdentifier>{b9b17be5-688a-4fda-9423-e43cf68103c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Systems">
+      <UniqueIdentifier>{70f6be7e-061e-47a1-ab22-d80f509365dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Components">
+      <UniqueIdentifier>{fe9a3d2f-f08b-43c5-9a3e-b1826ae6e0cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Components">
+      <UniqueIdentifier>{e243ff87-6ed2-4868-bc8d-fe6776855ce7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Systems">
+      <UniqueIdentifier>{9f2ec364-65f9-41ec-a70e-3685569875d0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimateSystem.cpp">
+      <Filter>Fichiers sources\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractSystem.cpp">
+      <Filter>Fichiers sources\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>Fichiers sources\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicComponent.cpp">
+      <Filter>Fichiers sources\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="VelocityComponent.cpp">
+      <Filter>Fichiers sources\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Fichiers sources\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementSystem.cpp">
+      <Filter>Fichiers sources\Systems</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\basic.frag">
+      <Filter>Fichiers de ressources\shaders</Filter>
+    </None>
+    <None Include="shaders\basic.vert">
+      <Filter>Fichiers de ressources\shaders</Filter>
+    </None>
+    <None Include="shaders\tilemap.frag">
+      <Filter>Fichiers de ressources\shaders</Filter>
+    </None>
+    <None Include="shaders\tilemap.vert">
+      <Filter>Fichiers de ressources\shaders</Filter>
+    </None>
+    <None Include="maps\map1.td">
+      <Filter>Fichiers de ressources\maps</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\debug.png">
+      <Filter>Fichiers de ressources\textures</Filter>
+    </Image>
+    <Image Include="textures\maMap.png">
+      <Filter>Fichiers de ressources\textures</Filter>
+    </Image>
+    <Image Include="textures\spritesheet.png">
+      <Filter>Fichiers de ressources\textures</Filter>
+    </Image>
+    <Image Include="textures\tileset.png">
+      <Filter>Fichiers de ressources\textures</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractSystem.h">
+      <Filter>Fichiers d%27en-tête\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimateSystem.h">
+      <Filter>Fichiers d%27en-tête\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Fichiers d%27en-tête\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Fichiers d%27en-tête\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicComponent.h">
+      <Filter>Fichiers d%27en-tête\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="VelocityComponent.h">
+      <Filter>Fichiers d%27en-tête\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementSystem.h">
+      <Filter>Fichiers d%27en-tête\Systems</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
