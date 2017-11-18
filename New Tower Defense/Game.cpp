@@ -32,14 +32,14 @@ void Game::init()
 {
     mMap.create("./maps/map1.tmx");
 
-    mTextureManager.load(TextureManager::ID::PLAYER_SPRITESHEET, "./textures/spritesheet_40px.png");
+    mTextureManager.load(TextureManager::ID::PLAYER_SPRITESHEET, "./textures/spritesheet_with_tower_40px.png");
 
     for (int i = 0; i < 1; i++) {
         auto&& entity = Entity::create();
-        entity->setFlags(Entity::Flags::player);
-        entity->setPosition(2 * 40, 2 * 40);
+        entity->setFlags(Entity::Flags::creep);
+        entity->setPosition(2 * 40 - (i * 50), 2 * 40);
         {
-            auto&& comp = std::make_unique<VelocityComponent>(200.f);
+            auto&& comp = std::make_unique<VelocityComponent>(200.f + (std::rand() % 200));
             comp->setVelocity(sf::Vector2f(1.f, 0.f));
             entity->addComponent(std::move(comp));
         }
@@ -48,7 +48,7 @@ void Game::init()
             entity->addComponent(std::move(comp));
         }
         {
-            auto&& comp = std::make_unique<GraphicComponent>(mTextureManager.get(TextureManager::ID::PLAYER_SPRITESHEET), 40);
+            auto&& comp = std::make_unique<GraphicComponent>(mTextureManager.get(TextureManager::ID::PLAYER_SPRITESHEET));
             {
                 auto durationFrame = sf::milliseconds(15);
                 std::vector<AnimationFrame> animations(0);
@@ -116,6 +116,20 @@ void Game::init()
         mAnimateSystem.registerEntity(entity.get());
         mMovementSystem.registerEntity(entity.get());
         mAIFollowPathSystem.registerEntity(entity.get());
+
+        mEntities.push_back(std::move(entity));
+    }
+
+    // Towers
+    {
+        auto&& entity = Entity::create();
+        entity->setFlags(Entity::Flags::tower);
+        entity->setPosition(6 * 40, 7 * 40 - (53 - 40)); // stretch the bottom (not the top) to the tile
+        {
+            auto&& comp = std::make_unique<GraphicComponent>(mTextureManager.get(TextureManager::ID::PLAYER_SPRITESHEET), sf::IntRect(120, 0, 40, 53), sf::Vector2i(40, 53));
+            entity->addComponent(std::move(comp));
+        }
+        mRenderSystem.registerEntity(entity.get());
 
         mEntities.push_back(std::move(entity));
     }
@@ -219,8 +233,8 @@ void Game::render()
         auto size = sf::Vector2i(mCamera.getSize());
 
         mWindow.setView(sf::View(
-            sf::Vector2f(center.x % 2 == 1 ? center.x + 1 : center.x, center.y % 2 == 1 ? center.y + 1 : center.y),
-            sf::Vector2f(size.x % 2 == 1 ? size.x + 1 : size.x, size.y % 2 == 1 ? size.y + 1 : size.y)
+            sf::Vector2f(static_cast<float>(center.x % 2 == 1 ? center.x + 1 : center.x), static_cast<float>(center.y % 2 == 1 ? center.y + 1 : center.y)),
+            sf::Vector2f(static_cast<float>(size.x % 2 == 1 ? size.x + 1 : size.x), static_cast<float>(size.y % 2 == 1 ? size.y + 1 : size.y))
         ));
     }
 

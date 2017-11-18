@@ -13,6 +13,7 @@ public:
     enum Flags {
         player = 0x01,
         creep = 0x02,
+        tower = 0x04,
     };
 
     Entity();

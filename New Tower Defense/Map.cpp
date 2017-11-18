@@ -70,8 +70,8 @@ void Map::createBackground(const tmx::TileLayer* const tileLayer)
     const auto& tiles = tileLayer->getTiles();
 
     // TODO : render only visible tiles
-    for (auto y = 0; y < mMap.getTileCount().y; ++y) {
-        for (auto x = 0; x < mMap.getTileCount().x; ++x) {
+    for (unsigned int y = 0; y < mMap.getTileCount().y; ++y) {
+        for (unsigned int x = 0; x < mMap.getTileCount().x; ++x) {
             const auto tileId = y * mMap.getTileCount().x + x;
             if (tileId >= tiles.size()) {
                 std::cerr << "The tile " << x << ";" << y << " is over bounds." << std::endl;
@@ -83,27 +83,29 @@ void Map::createBackground(const tmx::TileLayer* const tileLayer)
             const auto i = idIndex % tileset.getColumnCount();
             const auto j = idIndex / tileset.getColumnCount();
 
-            const auto tileX = i * tilesize.x + i * tileset.getSpacing() + tileset.getMargin();
-            const auto tileY = j * tilesize.y + j * tileset.getSpacing() + tileset.getMargin();
+            const auto tileX = static_cast<float>(i * tilesize.x + i * tileset.getSpacing() + tileset.getMargin());
+            const auto tileY = static_cast<float>(j * tilesize.y + j * tileset.getSpacing() + tileset.getMargin());
+
+            const auto tilePosition = sf::Vector2f(static_cast<float>(x * tilesize.x), static_cast<float>(y * tilesize.y));
 
             // top left
             {
-                sf::Vertex vertex(sf::Vector2f(x * tilesize.x, y * tilesize.y), sf::Vector2f(tileX, tileY));
+                sf::Vertex vertex(tilePosition, sf::Vector2f(tileX, tileY));
                 mVertices.append(vertex);
             }
             // bottom left
             {
-                sf::Vertex vertex(sf::Vector2f(x * tilesize.x, y * tilesize.y + tilesize.y), sf::Vector2f(tileX, tileY + tilesize.y));
+                sf::Vertex vertex(sf::Vector2f(tilePosition.x, tilePosition.y + tilesize.y), sf::Vector2f(tileX, tileY + tilesize.y));
                 mVertices.append(vertex);
             }
             // bottom right
             {
-                sf::Vertex vertex(sf::Vector2f(x * tilesize.x + tilesize.x, y * tilesize.y + tilesize.y), sf::Vector2f(tileX + tilesize.x, tileY + tilesize.y));
+                sf::Vertex vertex(sf::Vector2f(tilePosition.x + tilesize.x, tilePosition.y + tilesize.y), sf::Vector2f(tileX + tilesize.x, tileY + tilesize.y));
                 mVertices.append(vertex);
             }
             // top right
             {
-                sf::Vertex vertex(sf::Vector2f(x * tilesize.x + tilesize.x, y * tilesize.y), sf::Vector2f(tileX + tilesize.x, tileY));
+                sf::Vertex vertex(sf::Vector2f(tilePosition.x + tilesize.x, tilePosition.y), sf::Vector2f(tileX + tilesize.x, tileY));
                 mVertices.append(vertex);
             }
         }

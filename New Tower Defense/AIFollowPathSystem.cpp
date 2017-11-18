@@ -20,9 +20,8 @@ AIFollowPathSystem::~AIFollowPathSystem()
 void AIFollowPathSystem::update(const sf::Time& dt)
 {
     for (const auto& entity : mEntities) {
-        auto& velocityComp = dynamic_cast<VelocityComponent&>(entity->getComponent(Component::Type::VELOCITY));
-        auto& waypointComp = dynamic_cast<WaypointComponent&>(entity->getComponent(Component::Type::WAYPOINT));
-        auto& graphicComp = dynamic_cast<GraphicComponent&>(entity->getComponent(Component::Type::GRAPHIC));
+        auto& velocityComp = static_cast<VelocityComponent&>(entity->getComponent(Component::Type::VELOCITY));
+        auto& waypointComp = static_cast<WaypointComponent&>(entity->getComponent(Component::Type::WAYPOINT));
 
         auto currentWaypoint = mMap.getWaypoint(waypointComp.mCurrentIndex);
 
@@ -55,6 +54,7 @@ void AIFollowPathSystem::update(const sf::Time& dt)
 
             auto angleInRadians = std::atan2(positionToCurrentWaypoint.y, positionToCurrentWaypoint.x);
 
+            auto& graphicComp = static_cast<GraphicComponent&>(entity->getComponent(Component::Type::GRAPHIC));
             if (angleInRadians >= 1.f * M_PI_4 && angleInRadians < 3.f * M_PI_4) {
                 graphicComp.selectAnimation("DOWN");
             }

@@ -23,17 +23,22 @@ class GraphicComponent :
     public Component
 {
 public:
-    explicit GraphicComponent(const sf::Texture& texture, int side = 64);
+    GraphicComponent(
+        const sf::Texture& texture, 
+        const sf::IntRect& defaultTextureRect = sf::IntRect(0, 0, 0, 0), 
+        const sf::Vector2i& defaultSize = sf::Vector2i(0, 0)
+    );
     ~GraphicComponent();
 
     void selectAnimation(const std::string& animationName);
+    void setDefaultTextureRect(const sf::IntRect& rect);
+    void setDefaultSizeSprite(const sf::Vector2i& size);
 
     inline Type getType() const {
         return Type::GRAPHIC;
     }
 
 public:
-    int mSide; /**< pixels of a sprite side */
     const sf::Texture& mTexture; /**< given by TextureManager */
     std::array<sf::Vertex, 4> mVertices;
 

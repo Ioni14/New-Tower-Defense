@@ -28,23 +28,23 @@ void AnimateSystem::update(const sf::Time& dt)
             // mise à jour des vertices du sprite
             graphicComp.mVertices[0].position.x = 0;
             graphicComp.mVertices[0].position.y = 0;
-            graphicComp.mVertices[0].texCoords.x = frameRect.left;
-            graphicComp.mVertices[0].texCoords.y = frameRect.top;
+            graphicComp.mVertices[0].texCoords.x = static_cast<float>(frameRect.left);
+            graphicComp.mVertices[0].texCoords.y = static_cast<float>(frameRect.top);
 
             graphicComp.mVertices[1].position.x = 0;
-            graphicComp.mVertices[1].position.y = frameRect.height;
-            graphicComp.mVertices[1].texCoords.x = frameRect.left;
-            graphicComp.mVertices[1].texCoords.y = frameRect.top + frameRect.height;
+            graphicComp.mVertices[1].position.y = static_cast<float>(frameRect.height);
+            graphicComp.mVertices[1].texCoords.x = static_cast<float>(frameRect.left);
+            graphicComp.mVertices[1].texCoords.y = static_cast<float>(frameRect.top + frameRect.height);
 
-            graphicComp.mVertices[2].position.x = frameRect.width;
-            graphicComp.mVertices[2].position.y = frameRect.height;
-            graphicComp.mVertices[2].texCoords.x = frameRect.left + frameRect.width;
-            graphicComp.mVertices[2].texCoords.y = frameRect.top + frameRect.height;
+            graphicComp.mVertices[2].position.x = static_cast<float>(frameRect.width);
+            graphicComp.mVertices[2].position.y = static_cast<float>(frameRect.height);
+            graphicComp.mVertices[2].texCoords.x = static_cast<float>(frameRect.left + frameRect.width);
+            graphicComp.mVertices[2].texCoords.y = static_cast<float>(frameRect.top + frameRect.height);
 
-            graphicComp.mVertices[3].position.x = frameRect.width;
+            graphicComp.mVertices[3].position.x = static_cast<float>(frameRect.width);
             graphicComp.mVertices[3].position.y = 0;
-            graphicComp.mVertices[3].texCoords.x = frameRect.left + frameRect.width;
-            graphicComp.mVertices[3].texCoords.y = frameRect.top;
+            graphicComp.mVertices[3].texCoords.x = static_cast<float>(frameRect.left + frameRect.width);
+            graphicComp.mVertices[3].texCoords.y = static_cast<float>(frameRect.top);
         }
     }
 }

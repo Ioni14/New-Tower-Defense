@@ -3,7 +3,7 @@
 #include "Component.h"
 #include <vector>
 
-class Waypoint;
+struct Waypoint;
 
 class WaypointComponent :
     public Component
