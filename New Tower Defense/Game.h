@@ -6,6 +6,7 @@
 #include "RenderSystem.h"
 #include "AnimateSystem.h"
 #include "MovementSystem.h"
+#include "AIFollowPathSystem.h"
 #include "Entity.h"
 #include "Map.h"
 
@@ -30,6 +31,8 @@ private:
     RenderSystem mRenderSystem;
     AnimateSystem mAnimateSystem;
     MovementSystem mMovementSystem;
+    AIFollowPathSystem mAIFollowPathSystem;
+
     sf::View mCamera;
 
 	bool mRunning;

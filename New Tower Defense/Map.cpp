@@ -1,6 +1,7 @@
 #include "Map.h"
 
 #include <iostream>
+#include <algorithm>
 
 Map::Map(TextureManager& textureManager) :
     mTextureManager(textureManager),
@@ -22,18 +23,50 @@ void Map::create(const std::string & filename)
     }
     const auto& tileset = mMap.getTilesets()[0];
     mTextureManager.load(TextureManager::ID::TILESET, tileset.getImagePath());
-    const auto tilesize = tileset.getTileSize();
 
-    const auto& layer = mMap.getLayers()[0];
-    //layer->getType() : objectlayer | tilelayer
-    //layer->getName() == "background"; // tilelayer
-    //layer->getName() == "waypoints"; // objectlayer
-    if (mMap.getOrientation() != tmx::Orientation::Orthogonal || layer->getType() != tmx::Layer::Type::Tile) {
-        std::cerr << "The first layer is not a valid orthogonal tile layer." << std::endl;
+    for (auto& layer : mMap.getLayers()) {
+        switch (layer->getType()) {
+        case tmx::Layer::Type::Tile:
+            createBackground(dynamic_cast<const tmx::TileLayer* const>(layer.get()));
+            break;
+        case tmx::Layer::Type::Object:
+            createWaypoints(dynamic_cast<const tmx::ObjectGroup* const>(layer.get()));
+            break;
+        }
+    }
+
+    
+}
+
+void Map::draw(sf::RenderTarget & target, sf::RenderStates states) const
+{
+    states.texture = &mTextureManager.get(TextureManager::ID::TILESET);
+    target.draw(mVertices, states);
+}
+
+const Waypoint& Map::getWaypoint(std::vector<Waypoint>::size_type index) const
+{
+    if (index >= mWaypoints.size() || index < 0) {
+        throw std::logic_error("This waypoint does not exist.");
+    }
+
+    return mWaypoints[index];
+}
+
+std::vector<Waypoint>::size_type Map::countWaypoints() const
+{
+    return mWaypoints.size();
+}
+
+void Map::createBackground(const tmx::TileLayer* const tileLayer)
+{
+    if (mMap.getOrientation() != tmx::Orientation::Orthogonal) {
+        std::cerr << "The tile layer is not a valid orthogonal layer." << std::endl;
 
         return;
     }
-    const auto& tileLayer = dynamic_cast<const tmx::TileLayer* const>(layer.get());
+    const auto& tileset = mMap.getTilesets()[0];
+    const auto& tilesize = tileset.getTileSize();
     const auto& tiles = tileLayer->getTiles();
 
     // TODO : render only visible tiles
@@ -77,8 +110,47 @@ void Map::create(const std::string & filename)
     }
 }
 
-void Map::draw(sf::RenderTarget & target, sf::RenderStates states) const
+void Map::createWaypoints(const tmx::ObjectGroup* const objectLayer)
 {
-    states.texture = &mTextureManager.get(TextureManager::ID::TILESET);
-    target.draw(mVertices, states);
+    auto objects = objectLayer->getObjects();
+    
+    // sort by order property of waypoint type
+    std::sort(objects.begin(), objects.end(), [](const tmx::Object& o1, const tmx::Object& o2) -> bool {
+        auto order1 = 0;
+        auto order2 = 0;
+
+        for (const auto& prop : o1.getProperties()) {
+            if (prop.getName() == "order") {
+                order1 = prop.getIntValue();
+                break;
+            }
+        }
+        for (const auto& prop : o2.getProperties()) {
+            if (prop.getName() == "order") {
+                order2 = prop.getIntValue();
+                break;
+            }
+        }
+
+        return order1 < order2;
+    });
+
+    for (const auto& object : objects) {
+        auto begin = false;
+        for (const auto& prop : object.getProperties()) {
+            if (prop.getName() == "begin") {
+                begin = prop.getBoolValue();
+                break;
+            }
+        }
+        auto end = false;
+        for (const auto& prop : object.getProperties()) {
+            if (prop.getName() == "end") {
+                end = prop.getBoolValue();
+                break;
+            }
+        }
+        Waypoint waypoint = { sf::Vector2f(object.getPosition().x, object.getPosition().y), begin, end };
+        mWaypoints.push_back(std::move(waypoint));
+    }
 }

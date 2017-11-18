@@ -118,6 +118,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AbstractSystem.cpp" />
+    <ClCompile Include="AIFollowPathSystem.cpp" />
     <ClCompile Include="AnimateSystem.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -130,6 +131,7 @@
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="VelocityComponent.cpp" />
+    <ClCompile Include="WaypointComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="maps\map1.td" />
@@ -146,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractSystem.h" />
+    <ClInclude Include="AIFollowPathSystem.h" />
     <ClInclude Include="AnimateSystem.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Entity.h" />
@@ -157,6 +160,7 @@
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="VelocityComponent.h" />
+    <ClInclude Include="WaypointComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

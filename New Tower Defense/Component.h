@@ -6,7 +6,7 @@ class Component
 {
 public:
     using UPtr = std::unique_ptr<Component>;
-    enum class Type { VELOCITY, GRAPHIC /*SPRITE, PATH, ATTACK_TOWER, CARAC */ };
+    enum class Type { VELOCITY, GRAPHIC, WAYPOINT };
 
     Component();
     virtual ~Component();

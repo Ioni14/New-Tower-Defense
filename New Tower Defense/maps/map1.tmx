@@ -2,64 +2,64 @@
 <map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-up" width="20" height="30" tilewidth="40" tileheight="40" nextobjectid="21">
  <tileset firstgid="1" source="../tilesets/map.tsx"/>
  <objectgroup color="#e60000" name="waypoints">
-  <object id="1" name="begin" type="waypoint" x="100" y="100">
+  <object id="1" name="begin" type="waypoint" x="80" y="80">
    <properties>
     <property name="begin" type="bool" value="true"/>
     <property name="order" type="int" value="0"/>
    </properties>
   </object>
-  <object id="2" name="end" type="waypoint" x="740" y="1020">
+  <object id="2" name="end" type="waypoint" x="720" y="1000">
    <properties>
     <property name="end" type="bool" value="true"/>
     <property name="order" type="int" value="11"/>
    </properties>
   </object>
-  <object id="3" name="wp1" type="waypoint" x="660" y="100">
+  <object id="3" name="wp1" type="waypoint" x="640" y="80">
    <properties>
     <property name="order" type="int" value="1"/>
    </properties>
   </object>
-  <object id="4" name="wp2" type="waypoint" x="660" y="220">
+  <object id="4" name="wp2" type="waypoint" x="640" y="200">
    <properties>
     <property name="order" type="int" value="2"/>
    </properties>
   </object>
-  <object id="5" name="wp3" type="waypoint" x="180" y="220">
+  <object id="5" name="wp3" type="waypoint" x="160" y="200">
    <properties>
     <property name="order" type="int" value="3"/>
    </properties>
   </object>
-  <object id="6" name="wp4" type="waypoint" x="180" y="620">
+  <object id="6" name="wp4" type="waypoint" x="160" y="600">
    <properties>
     <property name="order" type="int" value="4"/>
    </properties>
   </object>
-  <object id="7" name="wp5" type="waypoint" x="380" y="620">
+  <object id="7" name="wp5" type="waypoint" x="360" y="600">
    <properties>
     <property name="order" type="int" value="5"/>
    </properties>
   </object>
-  <object id="8" name="wp6" type="waypoint" x="380" y="420">
+  <object id="8" name="wp6" type="waypoint" x="360" y="400">
    <properties>
     <property name="order" type="int" value="6"/>
    </properties>
   </object>
-  <object id="9" name="wp7" type="waypoint" x="660" y="420">
+  <object id="9" name="wp7" type="waypoint" x="640" y="400">
    <properties>
     <property name="order" type="int" value="7"/>
    </properties>
   </object>
-  <object id="10" name="wp8" type="waypoint" x="660" y="820">
+  <object id="10" name="wp8" type="waypoint" x="640" y="800">
    <properties>
     <property name="order" type="int" value="8"/>
    </properties>
   </object>
-  <object id="11" name="wp9" type="waypoint" x="180" y="820">
+  <object id="11" name="wp9" type="waypoint" x="160" y="800">
    <properties>
     <property name="order" type="int" value="9"/>
    </properties>
   </object>
-  <object id="12" name="wp10" type="waypoint" x="180" y="1020">
+  <object id="12" name="wp10" type="waypoint" x="160" y="1000">
    <properties>
     <property name="order" type="int" value="10"/>
    </properties>

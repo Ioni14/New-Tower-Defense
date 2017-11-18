@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "VelocityComponent.h"
 #include "GraphicComponent.h"
+#include "WaypointComponent.h"
 #include <iostream>
 #include <memory>
 
@@ -9,9 +10,10 @@ Game::Game() :
     mRenderSystem(mWindow),
     mAnimateSystem(),
     mMovementSystem(),
+    mAIFollowPathSystem(mMap, *this),
     mCamera(),
 	mRunning(false),
-	mWindow(sf::VideoMode(600, 800), "Tower Defense", sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize),
+	mWindow(sf::VideoMode(1600, 800), "Tower Defense", sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize),
     mEntities(0),
     mMap(mTextureManager),
 	mIsMovingUp(false),
@@ -37,14 +39,18 @@ void Game::init()
         entity->setFlags(Entity::Flags::player);
         entity->setPosition(2 * 40, 2 * 40);
         {
-            auto&& comp = std::make_unique<VelocityComponent>(50.f);
+            auto&& comp = std::make_unique<VelocityComponent>(200.f);
             comp->setVelocity(sf::Vector2f(1.f, 0.f));
+            entity->addComponent(std::move(comp));
+        }
+        {
+            auto&& comp = std::make_unique<WaypointComponent>();
             entity->addComponent(std::move(comp));
         }
         {
             auto&& comp = std::make_unique<GraphicComponent>(mTextureManager.get(TextureManager::ID::PLAYER_SPRITESHEET), 40);
             {
-                auto durationFrame = sf::milliseconds(80);
+                auto durationFrame = sf::milliseconds(15);
                 std::vector<AnimationFrame> animations(0);
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 0, 176, 40, 220 - 176), durationFrame));
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 1, 176, 40, 220 - 176), durationFrame));
@@ -59,7 +65,37 @@ void Game::init()
                 comp->mAnimations.insert({ "DOWN", std::move(animations) });
             }
             {
-                auto durationFrame = sf::milliseconds(60);
+                auto durationFrame = sf::milliseconds(15);
+                std::vector<AnimationFrame> animations(0);
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 0, 220, 40, 260 - 220), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 1, 220, 40, 260 - 220), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 2, 220, 40, 260 - 220), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 3, 220, 40, 260 - 220), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 4, 220, 40, 260 - 220), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 5, 220, 40, 260 - 220), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 6, 220, 40, 260 - 220), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 7, 220, 40, 260 - 220), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 8, 220, 40, 260 - 220), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 9, 220, 40, 260 - 220), durationFrame));
+                comp->mAnimations.insert({ "LEFT", std::move(animations) });
+            }
+            {
+                auto durationFrame = sf::milliseconds(15);
+                std::vector<AnimationFrame> animations(0);
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 0, 260, 40, 304 - 260), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 1, 260, 40, 304 - 260), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 2, 260, 40, 304 - 260), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 3, 260, 40, 304 - 260), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 4, 260, 40, 304 - 260), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 5, 260, 40, 304 - 260), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 6, 260, 40, 304 - 260), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 7, 260, 40, 304 - 260), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 8, 260, 40, 304 - 260), durationFrame));
+                animations.push_back(AnimationFrame(sf::IntRect(40 * 9, 260, 40, 304 - 260), durationFrame));
+                comp->mAnimations.insert({ "UP", std::move(animations) });
+            }
+            {
+                auto durationFrame = sf::milliseconds(15);
                 std::vector<AnimationFrame> animations(0);
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 0, 304, 40, 347 - 304), durationFrame));
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 1, 304, 40, 347 - 304), durationFrame));
@@ -79,12 +115,13 @@ void Game::init()
         mRenderSystem.registerEntity(entity.get());
         mAnimateSystem.registerEntity(entity.get());
         mMovementSystem.registerEntity(entity.get());
+        mAIFollowPathSystem.registerEntity(entity.get());
 
         mEntities.push_back(std::move(entity));
     }
 
     mCamera.setSize(static_cast<float>(mWindow.getSize().x), static_cast<float>(mWindow.getSize().y));
-    mCamera.setCenter(static_cast<float>(mWindow.getSize().x / 2.f), static_cast<float>(mWindow.getSize().y / 2.f));
+    mCamera.setCenter(static_cast<float>(mWindow.getSize().x / 2.f) + 1, static_cast<float>(mWindow.getSize().y / 2.f) + 1);
 }
 
 void Game::run()
@@ -125,7 +162,7 @@ void Game::processEvents()
 			mRunning = false;
 			break;
 		case sf::Event::Resized:
-            mCamera.setSize(event.size.width, event.size.height);
+            mCamera.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
 			break;
 		case sf::Event::KeyPressed:
 			if (event.key.code == sf::Keyboard::Escape) {
@@ -169,16 +206,23 @@ void Game::update(const sf::Time& dt)
 	}
     mCamera.move(direction * 400.f * dt.asSeconds());
 
+    mAIFollowPathSystem.update(dt);
     mMovementSystem.update(dt);
     mAnimateSystem.update(dt);
 }
 
 void Game::render()
 {
-    mWindow.setView(sf::View(
-        sf::Vector2f(static_cast<int>(mCamera.getCenter().x), static_cast<int>(mCamera.getCenter().y)),
-        sf::Vector2f(static_cast<int>(mCamera.getSize().x), static_cast<int>(mCamera.getSize().y)))
-    );
+    {
+        // need even coordinates for the view
+        auto center = sf::Vector2i(mCamera.getCenter());
+        auto size = sf::Vector2i(mCamera.getSize());
+
+        mWindow.setView(sf::View(
+            sf::Vector2f(center.x % 2 == 1 ? center.x + 1 : center.x, center.y % 2 == 1 ? center.y + 1 : center.y),
+            sf::Vector2f(size.x % 2 == 1 ? size.x + 1 : size.x, size.y % 2 == 1 ? size.y + 1 : size.y)
+        ));
+    }
 
 	mWindow.clear(sf::Color(3, 169, 244));
     mWindow.draw(mMap);

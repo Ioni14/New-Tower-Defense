@@ -23,6 +23,13 @@ public:
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
+    const Waypoint& getWaypoint(std::vector<Waypoint>::size_type index) const;
+    std::vector<Waypoint>::size_type countWaypoints() const;
+
+private:
+    void createBackground(const tmx::TileLayer* const tileLayer);
+    void createWaypoints(const tmx::ObjectGroup* const objectLayer);
+
 private:
     tmx::Map mMap;
     TextureManager& mTextureManager;
