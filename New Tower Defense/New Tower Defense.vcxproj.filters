@@ -34,6 +34,9 @@
     <Filter Include="Fichiers d%27en-tête\Systems">
       <UniqueIdentifier>{9f2ec364-65f9-41ec-a70e-3685569875d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers de ressources\tilesets">
+      <UniqueIdentifier>{5beec59e-0218-430a-9168-59a92ba7cfe8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -81,37 +84,15 @@
     <ClCompile Include="WaypointComponent.cpp">
       <Filter>Fichiers sources\Components</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\basic.frag">
-      <Filter>Fichiers de ressources\shaders</Filter>
-    </None>
-    <None Include="shaders\basic.vert">
-      <Filter>Fichiers de ressources\shaders</Filter>
-    </None>
-    <None Include="shaders\tilemap.frag">
-      <Filter>Fichiers de ressources\shaders</Filter>
-    </None>
-    <None Include="shaders\tilemap.vert">
-      <Filter>Fichiers de ressources\shaders</Filter>
-    </None>
-    <None Include="maps\map1.td">
-      <Filter>Fichiers de ressources\maps</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="textures\debug.png">
-      <Filter>Fichiers de ressources\textures</Filter>
-    </Image>
-    <Image Include="textures\maMap.png">
-      <Filter>Fichiers de ressources\textures</Filter>
-    </Image>
-    <Image Include="textures\spritesheet.png">
-      <Filter>Fichiers de ressources\textures</Filter>
-    </Image>
-    <Image Include="textures\tileset.png">
-      <Filter>Fichiers de ressources\textures</Filter>
-    </Image>
+    <ClCompile Include="CaracComponent.cpp">
+      <Filter>Fichiers sources\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AIKillCreepSystem.cpp">
+      <Filter>Fichiers sources\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackComponent.cpp">
+      <Filter>Fichiers sources\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -156,5 +137,36 @@
     <ClInclude Include="WaypointComponent.h">
       <Filter>Fichiers d%27en-tête\Components</Filter>
     </ClInclude>
+    <ClInclude Include="CaracComponent.h">
+      <Filter>Fichiers d%27en-tête\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackComponent.h">
+      <Filter>Fichiers d%27en-tête\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AIKillCreepSystem.h">
+      <Filter>Fichiers d%27en-tête\Systems</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="maps\map1.tmx">
+      <Filter>Fichiers de ressources\maps</Filter>
+    </None>
+    <None Include="tilesets\map.tsx">
+      <Filter>Fichiers de ressources\tilesets</Filter>
+    </None>
+    <None Include="shaders\entity.vert">
+      <Filter>Fichiers de ressources\shaders</Filter>
+    </None>
+    <None Include="shaders\entity.frag">
+      <Filter>Fichiers de ressources\shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\spritesheet_with_tower_40px.png">
+      <Filter>Fichiers de ressources\textures</Filter>
+    </Image>
+    <Image Include="textures\tileset.png">
+      <Filter>Fichiers de ressources\textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

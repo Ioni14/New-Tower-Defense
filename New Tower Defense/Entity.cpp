@@ -22,6 +22,11 @@ void Entity::setFlags(unsigned int flags)
     mFlags = flags;
 }
 
+bool Entity::hasFlag(unsigned int flag) const
+{
+    return (mFlags & flag) > 0;
+}
+
 void Entity::addComponent(Component::UPtr&& component)
 {
     if (component == nullptr) {
@@ -38,4 +43,14 @@ Component& Entity::getComponent(Component::Type type)
     }
 
     return *(it->second.get());
+}
+
+Component* Entity::getPtrComponent(Component::Type type)
+{
+    auto& it = mComponents.find(type);
+    if (it == mComponents.end() || it->second == nullptr) {
+        return nullptr;
+    }
+
+    return it->second.get();
 }

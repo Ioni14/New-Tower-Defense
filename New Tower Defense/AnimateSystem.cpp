@@ -13,7 +13,7 @@ AnimateSystem::~AnimateSystem()
 void AnimateSystem::update(const sf::Time& dt)
 {
     for (const auto& entity : mEntities) {
-        auto& graphicComp = dynamic_cast<GraphicComponent&>(entity->getComponent(Component::Type::GRAPHIC));
+        auto& graphicComp = static_cast<GraphicComponent&>(entity->getComponent(Component::Type::GRAPHIC));
 
         graphicComp.mTimeAnimation += dt;
 

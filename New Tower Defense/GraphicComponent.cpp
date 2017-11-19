@@ -1,13 +1,15 @@
 #include "GraphicComponent.h"
 
-
 GraphicComponent::GraphicComponent(const sf::Texture& texture, const sf::IntRect& defaultTextureRect, const sf::Vector2i& defaultSize) :
     mTexture(texture),
+    mVertices(0),
     mAnimations(),
     mActualAnimation(nullptr),
     mActualAnimationFrameIndex(0),
     mTimeAnimation(sf::Time::Zero)
 {
+    mVertices.resize(4);
+
     // top left
     mVertices[0].color = sf::Color::White;
     mVertices[0].position = sf::Vector2f(0, 0);

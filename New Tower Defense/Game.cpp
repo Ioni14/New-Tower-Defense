@@ -2,18 +2,22 @@
 #include "VelocityComponent.h"
 #include "GraphicComponent.h"
 #include "WaypointComponent.h"
+#include "CaracComponent.h"
+#include "AttackComponent.h"
 #include <iostream>
 #include <memory>
 
 Game::Game() :
     mTextureManager(),
+    mShaderManager(),
     mRenderSystem(mWindow),
     mAnimateSystem(),
     mMovementSystem(),
     mAIFollowPathSystem(mMap, *this),
+    mAIKillCreepSystem(*this),
     mCamera(),
 	mRunning(false),
-	mWindow(sf::VideoMode(1600, 800), "Tower Defense", sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize),
+	mWindow(sf::VideoMode(1200, 800), "Tower Defense", sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize),
     mEntities(0),
     mMap(mTextureManager),
 	mIsMovingUp(false),
@@ -33,13 +37,14 @@ void Game::init()
     mMap.create("./maps/map1.tmx");
 
     mTextureManager.load(TextureManager::ID::PLAYER_SPRITESHEET, "./textures/spritesheet_with_tower_40px.png");
+    mShaderManager.loadMultiple(ShaderManager::ID::ENTITY, "./shaders/entity.vert", "./shaders/entity.frag");
 
-    for (int i = 0; i < 1; i++) {
+    for (auto i = 0; i < 10; i++) {
         auto&& entity = Entity::create();
         entity->setFlags(Entity::Flags::creep);
         entity->setPosition(2 * 40 - (i * 50), 2 * 40);
         {
-            auto&& comp = std::make_unique<VelocityComponent>(200.f + (std::rand() % 200));
+            auto&& comp = std::make_unique<VelocityComponent>(100.f + (std::rand() % 200));
             comp->setVelocity(sf::Vector2f(1.f, 0.f));
             entity->addComponent(std::move(comp));
         }
@@ -49,8 +54,8 @@ void Game::init()
         }
         {
             auto&& comp = std::make_unique<GraphicComponent>(mTextureManager.get(TextureManager::ID::PLAYER_SPRITESHEET));
+            auto durationFrame = sf::milliseconds(30);
             {
-                auto durationFrame = sf::milliseconds(15);
                 std::vector<AnimationFrame> animations(0);
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 0, 176, 40, 220 - 176), durationFrame));
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 1, 176, 40, 220 - 176), durationFrame));
@@ -65,7 +70,6 @@ void Game::init()
                 comp->mAnimations.insert({ "DOWN", std::move(animations) });
             }
             {
-                auto durationFrame = sf::milliseconds(15);
                 std::vector<AnimationFrame> animations(0);
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 0, 220, 40, 260 - 220), durationFrame));
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 1, 220, 40, 260 - 220), durationFrame));
@@ -80,7 +84,6 @@ void Game::init()
                 comp->mAnimations.insert({ "LEFT", std::move(animations) });
             }
             {
-                auto durationFrame = sf::milliseconds(15);
                 std::vector<AnimationFrame> animations(0);
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 0, 260, 40, 304 - 260), durationFrame));
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 1, 260, 40, 304 - 260), durationFrame));
@@ -95,7 +98,6 @@ void Game::init()
                 comp->mAnimations.insert({ "UP", std::move(animations) });
             }
             {
-                auto durationFrame = sf::milliseconds(15);
                 std::vector<AnimationFrame> animations(0);
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 0, 304, 40, 347 - 304), durationFrame));
                 animations.push_back(AnimationFrame(sf::IntRect(40 * 1, 304, 40, 347 - 304), durationFrame));
@@ -112,24 +114,37 @@ void Game::init()
             comp->selectAnimation("RIGHT");
             entity->addComponent(std::move(comp));
         }
+        {
+            auto&& comp = std::make_unique<CaracComponent>(100);
+            entity->addComponent(std::move(comp));
+        }
         mRenderSystem.registerEntity(entity.get());
         mAnimateSystem.registerEntity(entity.get());
         mMovementSystem.registerEntity(entity.get());
         mAIFollowPathSystem.registerEntity(entity.get());
 
+        mCreeps.push_back(entity.get());
         mEntities.push_back(std::move(entity));
     }
 
     // Towers
-    {
+    for (auto i = 0; i < 16; i++) {
         auto&& entity = Entity::create();
         entity->setFlags(Entity::Flags::tower);
-        entity->setPosition(6 * 40, 7 * 40 - (53 - 40)); // stretch the bottom (not the top) to the tile
+        entity->setPosition(6 * 40 + (i / 7 * 40), 7 * 40 - (53 - 40) + ((i % 7) * 40)); // stretch the bottom (not the top) to the tile
         {
             auto&& comp = std::make_unique<GraphicComponent>(mTextureManager.get(TextureManager::ID::PLAYER_SPRITESHEET), sf::IntRect(120, 0, 40, 53), sf::Vector2i(40, 53));
             entity->addComponent(std::move(comp));
         }
+        {
+            auto&& comp = std::make_unique<AttackComponent>();
+            comp->mCooldownFull = sf::milliseconds(500);
+            comp->mRange = 100;
+            comp->mRawDamage = 2;
+            entity->addComponent(std::move(comp));
+        }
         mRenderSystem.registerEntity(entity.get());
+        mAIKillCreepSystem.registerEntity(entity.get());
 
         mEntities.push_back(std::move(entity));
     }
@@ -165,6 +180,11 @@ void Game::run()
 	}
 
 	clean();
+}
+
+std::vector<Entity*>& Game::getCreeps()
+{
+    return mCreeps;
 }
 
 void Game::processEvents()
@@ -220,7 +240,23 @@ void Game::update(const sf::Time& dt)
 	}
     mCamera.move(direction * 400.f * dt.asSeconds());
 
-    mAIFollowPathSystem.update(dt);
+    {
+        sf::Clock clockFollowPath;
+        mAIFollowPathSystem.update(dt);
+        if (clockFollowPath.getElapsedTime().asMilliseconds() > 0) {
+            std::cout << "follow path update : " << clockFollowPath.getElapsedTime().asMilliseconds() << " ms" << std::endl;
+        }
+    }
+
+    {
+        sf::Clock clockKillCreep;
+        clockKillCreep.restart();
+        mAIKillCreepSystem.update(dt);
+        if (clockKillCreep.getElapsedTime().asMilliseconds() > 0) {
+            std::cout << "kill creep update : " << clockKillCreep.getElapsedTime().asMilliseconds() << " ms" << std::endl;
+        }
+    }
+
     mMovementSystem.update(dt);
     mAnimateSystem.update(dt);
 }
@@ -240,7 +276,7 @@ void Game::render()
 
 	mWindow.clear(sf::Color(3, 169, 244));
     mWindow.draw(mMap);
-    mRenderSystem.update();
+    mRenderSystem.render(mShaderManager.get(ShaderManager::ID::ENTITY));
 	mWindow.display();
 }
 

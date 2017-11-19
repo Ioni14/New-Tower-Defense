@@ -19,8 +19,7 @@ struct AnimationFrame {
     sf::Time duration;
 };
 
-class GraphicComponent :
-    public Component
+class GraphicComponent : public Component
 {
 public:
     GraphicComponent(
@@ -40,7 +39,7 @@ public:
 
 public:
     const sf::Texture& mTexture; /**< given by TextureManager */
-    std::array<sf::Vertex, 4> mVertices;
+    std::vector<sf::Vertex> mVertices;
 
     std::unordered_map<std::string, std::vector<AnimationFrame>> mAnimations;
     std::vector<AnimationFrame>* mActualAnimation;

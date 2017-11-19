@@ -21,8 +21,10 @@ public:
     static UPtr create();
 
     void setFlags(unsigned int flags);
+    bool hasFlag(unsigned int flag) const;
     void addComponent(Component::UPtr&& component);
     Component& getComponent(Component::Type type);
+    Component* getPtrComponent(Component::Type type);
 
 private:
     static unsigned int mNextId;

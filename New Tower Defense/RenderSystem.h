@@ -11,9 +11,9 @@ public:
     ~RenderSystem();
 
     virtual void update(const sf::Time& dt = sf::Time::Zero);
+    void render(sf::Shader& shader);
 
 private:
-    void render();
 
     sf::RenderTarget& mTarget;
 };

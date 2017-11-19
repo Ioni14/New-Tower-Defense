@@ -3,10 +3,12 @@
 #include <SFML/Graphics.hpp>
 #include <list>
 #include "TextureManager.h"
+#include "ShaderManager.h"
 #include "RenderSystem.h"
 #include "AnimateSystem.h"
 #include "MovementSystem.h"
 #include "AIFollowPathSystem.h"
+#include "AIKillCreepSystem.h"
 #include "Entity.h"
 #include "Map.h"
 
@@ -18,6 +20,8 @@ public:
 
 	void run();
 
+    std::vector<Entity*>& getCreeps();
+
 private:
 	void init();
 	void processEvents();
@@ -28,10 +32,12 @@ private:
 
 private:
     TextureManager mTextureManager;
+    ShaderManager mShaderManager;
     RenderSystem mRenderSystem;
     AnimateSystem mAnimateSystem;
     MovementSystem mMovementSystem;
     AIFollowPathSystem mAIFollowPathSystem;
+    AIKillCreepSystem mAIKillCreepSystem;
 
     sf::View mCamera;
 
@@ -39,6 +45,7 @@ private:
 	sf::RenderWindow mWindow;
 
     std::vector<std::unique_ptr<Entity>> mEntities;
+    std::vector<Entity*> mCreeps;
     Map mMap;
 
 	bool mIsMovingUp;

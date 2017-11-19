@@ -27,10 +27,10 @@ void Map::create(const std::string & filename)
     for (auto& layer : mMap.getLayers()) {
         switch (layer->getType()) {
         case tmx::Layer::Type::Tile:
-            createBackground(dynamic_cast<const tmx::TileLayer* const>(layer.get()));
+            createBackground(static_cast<const tmx::TileLayer* const>(layer.get()));
             break;
         case tmx::Layer::Type::Object:
-            createWaypoints(dynamic_cast<const tmx::ObjectGroup* const>(layer.get()));
+            createWaypoints(static_cast<const tmx::ObjectGroup* const>(layer.get()));
             break;
         }
     }
