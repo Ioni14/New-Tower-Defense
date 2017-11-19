@@ -22,9 +22,17 @@ public:
 
     void setFlags(unsigned int flags);
     bool hasFlag(unsigned int flag) const;
+
     void addComponent(Component::UPtr&& component);
     Component& getComponent(Component::Type type);
     Component* getPtrComponent(Component::Type type);
+
+    inline void markRemove() {
+        mNeedToRemove = true;
+    }
+    inline bool needToRemove() const {
+        return mNeedToRemove;
+    }
 
 private:
     static unsigned int mNextId;
@@ -33,4 +41,6 @@ private:
 
     std::unordered_map<Component::Type, std::unique_ptr<Component>> mComponents;
     unsigned int mFlags;
+
+    bool mNeedToRemove;
 };

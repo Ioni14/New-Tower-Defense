@@ -5,6 +5,7 @@
 #include "CaracComponent.h"
 #include "AttackComponent.h"
 #include <iostream>
+#include <sstream>
 #include <memory>
 
 Game::Game() :
@@ -23,7 +24,9 @@ Game::Game() :
 	mIsMovingUp(false),
 	mIsMovingDown(false),
 	mIsMovingLeft(false),
-	mIsMovingRight(false)
+	mIsMovingRight(false),
+    mCountFrames(0),
+    mFpsClock()
 {
 }
 
@@ -39,7 +42,7 @@ void Game::init()
     mTextureManager.load(TextureManager::ID::PLAYER_SPRITESHEET, "./textures/spritesheet_with_tower_40px.png");
     mShaderManager.loadMultiple(ShaderManager::ID::ENTITY, "./shaders/entity.vert", "./shaders/entity.frag");
 
-    for (auto i = 0; i < 10; i++) {
+    for (auto i = 0; i < 200; i++) {
         auto&& entity = Entity::create();
         entity->setFlags(Entity::Flags::creep);
         entity->setPosition(2 * 40 - (i * 50), 2 * 40);
@@ -148,9 +151,30 @@ void Game::init()
 
         mEntities.push_back(std::move(entity));
     }
+    for (auto i = 0; i < 14; i++) {
+        auto&& entity = Entity::create();
+        entity->setFlags(Entity::Flags::tower);
+        entity->setPosition(6 * 40 + (i * 40), 23 * 40 - (53 - 40)); // stretch the bottom (not the top) to the tile
+        {
+            auto&& comp = std::make_unique<GraphicComponent>(mTextureManager.get(TextureManager::ID::PLAYER_SPRITESHEET), sf::IntRect(120, 0, 40, 53), sf::Vector2i(40, 53));
+            entity->addComponent(std::move(comp));
+        }
+        {
+            auto&& comp = std::make_unique<AttackComponent>();
+            comp->mCooldownFull = sf::milliseconds(500);
+            comp->mRange = 100;
+            comp->mRawDamage = 4;
+            entity->addComponent(std::move(comp));
+        }
+        mRenderSystem.registerEntity(entity.get());
+        mAIKillCreepSystem.registerEntity(entity.get());
 
-    mCamera.setSize(static_cast<float>(mWindow.getSize().x), static_cast<float>(mWindow.getSize().y));
-    mCamera.setCenter(static_cast<float>(mWindow.getSize().x / 2.f) + 1, static_cast<float>(mWindow.getSize().y / 2.f) + 1);
+        mEntities.push_back(std::move(entity));
+    }
+
+    mCamera.reset(sf::FloatRect(0.f, 0.f, static_cast<float>(mWindow.getSize().x), static_cast<float>(mWindow.getSize().y)));
+    //mCamera.setSize(static_cast<float>(mWindow.getSize().x), static_cast<float>(mWindow.getSize().y));
+    //mCamera.setCenter(static_cast<float>(mWindow.getSize().x / 2.f) + 1, static_cast<float>(mWindow.getSize().y / 2.f) + 1);
 }
 
 void Game::run()
@@ -164,6 +188,15 @@ void Game::run()
 	mRunning = true;
 	while (mRunning)
 	{
+        if (mFpsClock.getElapsedTime().asMilliseconds() >= 1000) {
+            std::ostringstream oss;
+            oss << "Tower Defense. FPS : " << mCountFrames;
+            mWindow.setTitle(oss.str());
+            mCountFrames = 0;
+            mFpsClock.restart();
+        }
+        ++mCountFrames;
+
 		processEvents();
 
 		// update fixed timestep
@@ -174,6 +207,7 @@ void Game::run()
 
 			processEvents();
 			update(TIME_PER_FRAME);
+            removeMarkedEntities();
 		}
 
 		render();
@@ -185,6 +219,11 @@ void Game::run()
 std::vector<Entity*>& Game::getCreeps()
 {
     return mCreeps;
+}
+
+void Game::handleArrivedEntity(Entity& entity)
+{
+    entity.markRemove();
 }
 
 void Game::processEvents()
@@ -240,25 +279,36 @@ void Game::update(const sf::Time& dt)
 	}
     mCamera.move(direction * 400.f * dt.asSeconds());
 
-    {
-        sf::Clock clockFollowPath;
-        mAIFollowPathSystem.update(dt);
-        if (clockFollowPath.getElapsedTime().asMilliseconds() > 0) {
-            std::cout << "follow path update : " << clockFollowPath.getElapsedTime().asMilliseconds() << " ms" << std::endl;
-        }
-    }
-
-    {
-        sf::Clock clockKillCreep;
-        clockKillCreep.restart();
-        mAIKillCreepSystem.update(dt);
-        if (clockKillCreep.getElapsedTime().asMilliseconds() > 0) {
-            std::cout << "kill creep update : " << clockKillCreep.getElapsedTime().asMilliseconds() << " ms" << std::endl;
-        }
-    }
-
+    mAIFollowPathSystem.update(dt);
+    mAIKillCreepSystem.update(dt);
     mMovementSystem.update(dt);
     mAnimateSystem.update(dt);
+}
+
+void Game::removeMarkedEntities()
+{
+    mAIFollowPathSystem.removeMarkedEntities();
+    mAIKillCreepSystem.removeMarkedEntities();
+    mMovementSystem.removeMarkedEntities();
+    mAnimateSystem.removeMarkedEntities();
+    mRenderSystem.removeMarkedEntities();
+
+    mCreeps.erase(
+        std::remove_if(
+            mCreeps.begin(),
+            mCreeps.end(),
+            [](Entity* entity) { return entity->needToRemove(); }
+        ),
+        mCreeps.end()
+    );
+    mEntities.erase(
+        std::remove_if(
+            mEntities.begin(), 
+            mEntities.end(), 
+            [](const std::unique_ptr<Entity>& entity) { return entity->needToRemove(); }
+        ),
+        mEntities.end()
+    );
 }
 
 void Game::render()

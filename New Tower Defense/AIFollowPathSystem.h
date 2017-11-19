@@ -8,12 +8,12 @@ class Game;
 class AIFollowPathSystem : public AbstractSystem
 {
 public:
-    explicit AIFollowPathSystem(const Map& map, const Game& game);
+    explicit AIFollowPathSystem(const Map& map, Game& game);
     ~AIFollowPathSystem();
 
     void update(const sf::Time& dt);
 
 private:
     const Map& mMap;
-    const Game& mGame;
+    Game& mGame;
 };

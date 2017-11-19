@@ -22,11 +22,23 @@ void RenderSystem::update(const sf::Time& dt)
 void RenderSystem::render(sf::Shader& shader)
 {
     // 1 draw per (shader/texture couple)
-    // sort vertexarray by z-order (top + height)
+    // sort entities by z-order (top + height)
 
-    // TODO : sort entities per texture and shader !
+    // TODO : sort entities per texture and shader when multiple !
 
     for (const auto& entity : mEntities) {
+
+        const auto& viewSize = mTarget.getView().getSize();
+        const auto& viewCenter = mTarget.getView().getCenter();
+
+        if (entity->getPosition().x >= viewCenter.x + viewSize.x / 2.f
+            || entity->getPosition().y >= viewCenter.y + viewSize.y / 2.f
+            || entity->getPosition().x < viewCenter.x - viewSize.x / 2.f - 40 // -40 for average width of entity
+            || entity->getPosition().y < viewCenter.y - viewSize.y / 2.f - 40) { // -40 for average height of entity
+            // not visible entity
+            continue;
+        }
+
         auto& graphicComp = static_cast<GraphicComponent&>(entity->getComponent(Component::Type::GRAPHIC));
         auto caracComp = entity->getPtrComponent(Component::Type::CARAC);
 
@@ -58,6 +70,7 @@ void RenderSystem::render(sf::Shader& shader)
             vertices.append(sf::Vertex(sf::Vector2f((39.f - 1.f) * ratioHealth + 1.f, -9.f), sf::Color(58, 190, 28), sf::Vector2f(-1.f, -1.f)));
         }
 
+        // gizmos
         if (false && entity->hasFlag(Entity::Flags::tower)) {
             auto& attackComp = static_cast<AttackComponent&>(entity->getComponent(Component::Type::ATTACK));
             // draw circle range

@@ -14,6 +14,22 @@ AIKillCreepSystem::~AIKillCreepSystem()
 {
 }
 
+void AIKillCreepSystem::removeMarkedEntities()
+{
+    for (const auto& entity : mEntities) {
+        auto& attackComp = static_cast<AttackComponent&>(entity->getComponent(Component::Type::ATTACK));
+
+        if (attackComp.mTarget == nullptr) {
+            continue;
+        }
+        if (attackComp.mTarget->needToRemove()) {
+            attackComp.mTarget = nullptr;
+        }
+    }
+
+    AbstractSystem::removeMarkedEntities();
+}
+
 void AIKillCreepSystem::update(const sf::Time & dt)
 {
     auto& creeps = mGame.getCreeps();
@@ -41,7 +57,6 @@ void AIKillCreepSystem::update(const sf::Time & dt)
             
             if (caracComp.isDead()) {
                 attackComp.mTarget = nullptr;
-                std::cout << "target lost" << std::endl;
             }
             else {
                 auto towerToCreep = attackComp.mTarget->getPosition() - entity->getPosition();
@@ -51,7 +66,6 @@ void AIKillCreepSystem::update(const sf::Time & dt)
                 if (distanceTowerToCreep > attackComp.mRange * attackComp.mRange) {
                     // far away
                     attackComp.mTarget = nullptr;
-                    std::cout << "target lost" << std::endl;
                 }
             }
         }
@@ -75,7 +89,7 @@ void AIKillCreepSystem::update(const sf::Time & dt)
 
                 // found good one
                 attackComp.mTarget = creep;
-                std::cout << "new target" << std::endl;
+
                 break;
             }
         }
@@ -91,8 +105,6 @@ void AIKillCreepSystem::update(const sf::Time & dt)
 
         auto& caracComp = static_cast<CaracComponent&>(attackComp.mTarget->getComponent(Component::Type::CARAC));
         caracComp.mHealth -= attackComp.mRawDamage;
-
-        std::cout << "hit target : " << static_cast<float>(caracComp.mHealth) / caracComp.mMaxHealth << " % HP" << std::endl;
 
         if (caracComp.isDead()) {
             attackComp.mTarget = nullptr;

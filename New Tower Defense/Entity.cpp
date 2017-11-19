@@ -5,7 +5,8 @@ unsigned int Entity::mNextId = 1;
 Entity::Entity() :
     mId(0),
     mComponents(),
-    mFlags(0)
+    mFlags(0),
+    mNeedToRemove(false)
 {
 }
 

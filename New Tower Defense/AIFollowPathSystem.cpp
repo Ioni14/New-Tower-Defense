@@ -4,10 +4,11 @@
 #include "WaypointComponent.h"
 #include "VelocityComponent.h"
 #include "GraphicComponent.h"
+#include "Game.h"
 #include <iostream>
 #include <cmath>
 
-AIFollowPathSystem::AIFollowPathSystem(const Map& map, const Game& game) :
+AIFollowPathSystem::AIFollowPathSystem(const Map& map, Game& game) :
     mMap(map),
     mGame(game)
 {
@@ -38,10 +39,8 @@ void AIFollowPathSystem::update(const sf::Time& dt)
             if (currentWaypoint.end) {
                 // entity is arrived
                 velocityComp.setVelocity(sf::Vector2f(0, 0));
+                mGame.handleArrivedEntity(*entity);
 
-                std::cout << "entity arrived" << std::endl;
-
-                // TODO : mGame treats entity arrived
                 continue;
             }
             // go to the next

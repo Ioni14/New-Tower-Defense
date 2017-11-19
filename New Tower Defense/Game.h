@@ -22,11 +22,14 @@ public:
 
     std::vector<Entity*>& getCreeps();
 
+    void handleArrivedEntity(Entity& entity);
+
 private:
 	void init();
 	void processEvents();
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
 	void update(const sf::Time& dt);
+    void removeMarkedEntities();
 	void render();
 	void clean();
 
@@ -52,4 +55,7 @@ private:
 	bool mIsMovingDown;
 	bool mIsMovingLeft;
 	bool mIsMovingRight;
+
+    unsigned int mCountFrames;
+    sf::Clock mFpsClock;
 };
